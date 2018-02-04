@@ -49,9 +49,8 @@ itemshelf.register_shelf("disk_storage", {
 		"laptop_disk_storage_front.png", --front
 	},
 	nodebox = default_shelf,
-	drawtype="glasslike",
 	paramtype2 = "facedir",
-	capacity = 8,
+	capacity = 16,
 	shown_items = 1,
 })
 
