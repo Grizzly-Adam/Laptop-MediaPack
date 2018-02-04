@@ -1,4 +1,4 @@
-dofile(minetest.get_modpath("laptop_floppypack").."/api.lua")
+dofile(minetest.get_modpath("laptop_mediapack").."/api.lua")
 
 -- Default nodes for Itemshelf mod
 -- By Zorman2000
