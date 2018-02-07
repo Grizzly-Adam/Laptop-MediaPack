@@ -161,7 +161,7 @@ function itemshelf.register_shelf(name, def)
 		drawtype = drawtype,
 		node_box = def.nodebox,
 		mesh = def.mesh,
-		groups = {choppy = 2, itemshelf = 1, itemshelf_shown_items = def.shown_items or 4},
+		groups = {choppy = 2, oddly_breakable_by_hand=2, itemshelf = 1, itemshelf_shown_items = def.shown_items or 4},
 		on_construct = function(pos)
 			-- Initialize inventory
 			local meta = minetest.get_meta(pos)
