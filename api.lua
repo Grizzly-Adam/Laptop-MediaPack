@@ -152,7 +152,8 @@ function itemshelf.register_shelf(name, def)
 	if def.mesh then
 		drawtype = "mesh"
 	end
-	minetest.register_node(":itemshelf:"..name, {
+
+	minetest.register_node(":laptop:"..name, {
 		description = def.description,
 		tiles = def.textures,
 		paramtype = "light",
@@ -160,7 +161,7 @@ function itemshelf.register_shelf(name, def)
 		drawtype = drawtype,
 		node_box = def.nodebox,
 		mesh = def.mesh,
-		groups = {choppy = 2, oddly_breakable_by_hand = 2, flammable = 2, itemshelf = 1, itemshelf_shown_items = def.shown_items or 4},
+		groups = {choppy = 2, itemshelf = 1, itemshelf_shown_items = def.shown_items or 4},
 		on_construct = function(pos)
 			-- Initialize inventory
 			local meta = minetest.get_meta(pos)
@@ -168,6 +169,17 @@ function itemshelf.register_shelf(name, def)
 	    	inv:set_size("main", def.capacity or 4)
 	    	-- Initialize formspec
 	    	meta:set_string("formspec", get_shelf_formspec(def.capacity or 4))
+	    	-- If given half_depth, initialize the displacement
+	    	if def.half_depth == true then
+	    		meta:set_float("itemshelf:depth_displacement", -0.1475)
+	    	end
+	    	-- Initialize custom displacements if defined
+	    	if def.vertical_offset then
+	    		meta:set_float("itemshelf:vertical_displacement", def.vertical_offset)
+	    	end
+	    	if def.depth_offset then
+	    		meta:set_float("itemshelf:depth_displacement", def.depth_offset)
+	    	end
 		end,
 		-- allow_metadata_inventory_put = function(pos, listname, index, stack, player)
 		-- 	if minetest.get_item_group(stack:get_name(), "music_disc") ~= 0 then
@@ -179,11 +191,12 @@ function itemshelf.register_shelf(name, def)
 		on_metadata_inventory_take = update_shelf,
 		on_dig = function(pos, node, digger)
 			-- Clear any object disc
-			local objs = minetest.get_objects_inside_radius(pos, 1.7)
+			local objs = minetest.get_objects_inside_radius(pos, 0.7)
 			for _,obj in pairs(objs) do
 				obj:remove()
 			end
-			-- Pop-up disc if existing
+			-- Pop-up items
+			minetest.add_item(pos, node.name)
 			local meta = minetest.get_meta(pos)
 			local list = meta:get_inventory():get_list("main")
 			for _,item in pairs(list) do
@@ -197,12 +210,29 @@ function itemshelf.register_shelf(name, def)
 			minetest.remove_node(pos)
 		end,
 		on_blast = function(pos)
-			local drops = {}
-			default.get_inventory_drops(pos, "itemshelf:shelf", drops)
-			drops[#drops + 1] = "itemshelf:shelf"
+			minetest.add_item(pos, minetest.get_node(pos).name)
+			local meta = minetest.get_meta(pos)
+			local list = meta:get_inventory():get_list("main")
+			for _,item in pairs(list) do
+				local drop_pos = {
+					x=math.random(pos.x - 0.5, pos.x + 0.5),
+					y=pos.y,
+					z=math.random(pos.z - 0.5, pos.z + 0.5)}
+				minetest.add_item(pos, item:get_name())
+			end
+			-- Remove node
 			minetest.remove_node(pos)
-			return drops
-		end
+			return nil
+		end,
+		-- Screwdriver support
+		on_rotate = function(pos, node, user, mode, new_param2) --{name = node.name, param1 = node.param1, param2 = node.param2}, user, mode, new_param2)
+			-- Rotate
+			node.param2 = new_param2
+			minetest.swap_node(pos, node)
+			update_shelf(pos)
+			-- Disable rotation by screwdriver
+			return false
+		end,
 	})
 end
 
