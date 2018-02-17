@@ -32,7 +32,7 @@ local function update_shelf(pos)
 	local node = minetest.get_node(pos)
 	local meta = minetest.get_meta(pos)
 	-- Calculate directions
-	local node_dir = minetest.facedir_to_dir(((node.param2 + 2) % 4))
+	local node_dir = minetest.facedir_to_dir(((node.param2) % 4))
 	local obj_dir = minetest.facedir_to_dir(get_obj_dir(node.param2))
 	-- Get maximum number of shown items (4 or 6)
 	local max_shown_items = minetest.get_item_group(node.name, "itemshelf_shown_items")
@@ -85,9 +85,9 @@ local function update_shelf(pos)
 	local displacement = 0.15
 
 	local start_pos = {
-		x=pos.x - (obj_dir.x * horizontal_displacement) + (node_dir.x * 0.1),
+		x=pos.x - (obj_dir.x * horizontal_displacement) + (node_dir.x * 0.09),
 		y=pos.y -.25,
-		z=pos.z - (obj_dir.z * horizontal_displacement) + (node_dir.z * 0.25)
+		z=pos.z - (obj_dir.z * horizontal_displacement) + (node_dir.z * 0.09)
 	}
 
 
