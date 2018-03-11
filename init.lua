@@ -1,4 +1,5 @@
 dofile(minetest.get_modpath("laptop_mediapack").."/api.lua")
+dofile(minetest.get_modpath("laptop_mediapack").."/craftrecipes.lua")
 
 -- Default nodes for Itemshelf mod
 -- By Zorman2000
